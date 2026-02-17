@@ -32,8 +32,8 @@ export function TimelineCard({
 
   return (
     <motion.div
-      className={`relative flex items-center gap-8 ${
-        isLeftSide ? "flex-row" : "flex-row-reverse"
+      className={`relative flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 ${
+        isLeftSide ? "md:flex-row" : "md:flex-row-reverse"
       }`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
@@ -41,7 +41,7 @@ export function TimelineCard({
     >
       {/* Card */}
       <motion.div
-        className={`w-96 cursor-pointer ${isLeftSide ? "text-right" : "text-left"}`}
+        className={`w-full max-w-md md:w-96 cursor-pointer ${isLeftSide ? "md:text-right text-left" : "text-left"}`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
@@ -54,7 +54,7 @@ export function TimelineCard({
           </div>
 
           {/* Image with lock overlay */}
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative h-40 md:h-48 overflow-hidden">
             <img
               src={image}
               alt={title}
@@ -113,7 +113,7 @@ export function TimelineCard({
 
       {/* Timeline dot with time */}
       <motion.div
-        className="relative z-10 flex flex-col items-center justify-center"
+        className="relative z-10 flex flex-col items-center justify-center mx-auto md:mx-0 my-3 md:my-0"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: index * 0.1 + 0.2, type: "spring" }}
@@ -123,8 +123,8 @@ export function TimelineCard({
         </div>
       </motion.div>
 
-      {/* Spacer for other side */}
-      <div className="w-96" />
+      {/* Spacer for other side (hidden on small screens) */}
+      <div className="hidden md:block md:w-96" />
     </motion.div>
   );
 }
