@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { Lock, Unlock, Trophy, Clock } from "lucide-react";
+import { Lock, Unlock, Trophy, Clock, Key } from "lucide-react";
+import { useState } from "react";
 
 interface TimelineCardProps {
   id: number;
@@ -12,6 +13,9 @@ interface TimelineCardProps {
   gameIcon: React.ReactNode;
   onClick: () => void;
   index: number;
+  password?: string;
+  isAdminMode?: boolean;
+  onToggleLock?: () => void;
 }
 
 export function TimelineCard({
@@ -25,15 +29,19 @@ export function TimelineCard({
   gameIcon,
   onClick,
   index,
+  password = "",
+  isAdminMode = false,
+  onToggleLock,
 }: TimelineCardProps) {
+  const [showPassword, setShowPassword] = useState(false);
   // Even indices (0, 2, 4, 6...) go on the LEFT
   // Odd indices (1, 3, 5, 7...) go on the RIGHT
   const isLeftSide = index % 2 === 0;
 
   return (
     <motion.div
-      className={`relative flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 ${
-        isLeftSide ? "md:flex-row" : "md:flex-row-reverse"
+      className={`relative flex items-center gap-8 ${
+        isLeftSide ? "flex-row" : "flex-row-reverse"
       }`}
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
@@ -41,7 +49,7 @@ export function TimelineCard({
     >
       {/* Card */}
       <motion.div
-        className={`w-full max-w-md md:w-96 cursor-pointer ${isLeftSide ? "md:text-right text-left" : "text-left"}`}
+        className={`w-96 cursor-pointer ${isLeftSide ? "text-right" : "text-left"}`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
@@ -53,8 +61,48 @@ export function TimelineCard({
             <span className="text-sm font-bold text-gray-900">{time}</span>
           </div>
 
+          {/* Admin Controls */}
+          {isAdminMode && (
+            <div className={`absolute top-14 ${isLeftSide ? "right-3" : "left-3"} z-10 flex flex-col gap-2`}>
+              {/* Lock button - toggle locked/unlocked state */}
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleLock?.();
+                }}
+                className={`${isLocked ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white rounded-full p-2 shadow-lg`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+              </motion.button>
+              
+              {/* Key button - show password */}
+              {password && (
+                <motion.button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPassword(!showPassword);
+                  }}
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-full p-2 shadow-lg"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <Key className="w-4 h-4" />
+                </motion.button>
+              )}
+            </div>
+          )}
+
+          {/* Password display */}
+          {isAdminMode && showPassword && password && (
+            <div className={`absolute top-3 ${isLeftSide ? "left-3" : "right-3"} z-10 bg-indigo-600 text-white rounded-lg px-3 py-2 shadow-lg text-sm font-mono`}>
+              {password}
+            </div>
+          )}
+
           {/* Image with lock overlay */}
-          <div className="relative h-40 md:h-48 overflow-hidden">
+          <div className="relative h-48 overflow-hidden">
             <img
               src={image}
               alt={title}
@@ -71,7 +119,11 @@ export function TimelineCard({
                   transition={{ duration: 2, repeat: Infinity }}
                   className="mb-3"
                 >
-                  <Lock className="w-12 h-12 text-white" strokeWidth={2.5} />
+                  {id === 13 ? (
+                    <div className="text-5xl font-bold text-white">FREE</div>
+                  ) : (
+                    <Lock className="w-12 h-12 text-white" strokeWidth={2.5} />
+                  )}
                 </motion.div>
                 
                 {/* Game badge */}
@@ -80,7 +132,7 @@ export function TimelineCard({
                     {gameIcon}
                   </div>
                   <span className="text-sm font-semibold text-gray-900">
-                    {gameName}
+                    {id === 13 ? "Click to claim!" : gameName}
                   </span>
                 </div>
               </div>
@@ -113,7 +165,7 @@ export function TimelineCard({
 
       {/* Timeline dot with time */}
       <motion.div
-        className="relative z-10 flex flex-col items-center justify-center mx-auto md:mx-0 my-3 md:my-0"
+        className="relative z-10 flex flex-col items-center justify-center"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: index * 0.1 + 0.2, type: "spring" }}
@@ -123,8 +175,8 @@ export function TimelineCard({
         </div>
       </motion.div>
 
-      {/* Spacer for other side (hidden on small screens) */}
-      <div className="hidden md:block md:w-96" />
+      {/* Spacer for other side */}
+      <div className="w-96" />
     </motion.div>
   );
 }

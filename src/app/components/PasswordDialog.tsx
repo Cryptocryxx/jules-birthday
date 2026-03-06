@@ -11,15 +11,17 @@ interface PasswordDialogProps {
   password: string;
   onWin: () => void;
   onClose: () => void;
+  onMasterUnlock?: () => void; // New callback for master password
 }
 
-export function PasswordDialog({ 
-  isOpen, 
-  gameName, 
-  gameDescription, 
-  password, 
-  onWin, 
-  onClose 
+export function PasswordDialog({
+  isOpen,
+  gameName,
+  gameDescription,
+  password,
+  onWin,
+  onClose,
+  onMasterUnlock,
 }: PasswordDialogProps) {
   const [inputPassword, setInputPassword] = useState("");
   const [error, setError] = useState(false);
@@ -27,8 +29,23 @@ export function PasswordDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const MASTER_PASSWORD = "IKBENEENAPPEL";
     
-    if (inputPassword.toUpperCase() === password.toUpperCase()) {
+    // Check for master password first
+    if (inputPassword === MASTER_PASSWORD) {
+      setSuccess(true);
+      setError(false);
+      setTimeout(() => {
+        if (onMasterUnlock) {
+          onMasterUnlock(); // Unlock all cards
+        }
+        setInputPassword("");
+        setSuccess(false);
+      }, 1500);
+    } else if (
+      inputPassword.toUpperCase() === password.toUpperCase()
+    ) {
       setSuccess(true);
       setError(false);
       setTimeout(() => {
@@ -68,7 +85,11 @@ export function PasswordDialog({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
           >
             <div className="bg-white rounded-2xl shadow-2xl p-8 relative">
               {/* Close button */}
@@ -84,7 +105,9 @@ export function PasswordDialog({
                 {/* Icon */}
                 <motion.div
                   className="flex justify-center"
-                  animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
+                  animate={
+                    error ? { x: [-10, 10, -10, 10, 0] } : {}
+                  }
                   transition={{ duration: 0.4 }}
                 >
                   {success ? (
@@ -119,19 +142,29 @@ export function PasswordDialog({
 
                 {/* Password Form */}
                 {!success && (
-                  <form onSubmit={handleSubmit} className="space-y-4">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4"
+                  >
                     <div>
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
                         Enter the password to unlock:
                       </label>
                       <Input
                         id="password"
                         type="text"
                         value={inputPassword}
-                        onChange={(e) => setInputPassword(e.target.value)}
+                        onChange={(e) =>
+                          setInputPassword(e.target.value)
+                        }
                         placeholder="Type password here..."
                         className={`text-center text-lg uppercase ${
-                          error ? "border-red-500 animate-shake" : ""
+                          error
+                            ? "border-red-500 animate-shake"
+                            : ""
                         }`}
                         autoFocus
                       />
