@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { TimelineCard } from "./components/TimelineCard";
-import { TimelineLine } from "./components/TimelineLine";
 import { PasswordDialog } from "./components/PasswordDialog";
 import { IntroOverlay } from "./components/IntroOverlay";
 import { ApologyOverlay } from "./components/ApologyOverlay";
@@ -224,11 +223,11 @@ const dateCards = [
       "My Mom and Uli actually also wanted to contribute something for you. So they got us this little surprise. Hint you might need to pack something nice.",
     image:
       "https://prod.superblogcdn.com/site_cuid_ckucmy84h97811nplkx3qfbgx/images/screenshot-1133-1710220427152-compressed.png",
-    game: "FREE",
+    game: "Dailys",
     gameIconName: "Heart",
-    password: "",
+    password: "EXTRA",
     gameDescription:
-      "This is a free gift! No game needed - just enjoy!",
+      "Beat me in ALL dailys!",
   },
   {
     day: "19.04.2026",
@@ -279,6 +278,7 @@ export default function App() {
   const [showAdminOverlay, setShowAdminOverlay] =
     useState(false);
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // --- cookie persistence for unlocked cards ---
   const COOKIE_NAME = "jb_unlocked";
@@ -335,8 +335,8 @@ export default function App() {
 
   const handleIntroClose = () => {
     setShowIntro(false);
-    // Only show apology overlay if card 13 hasn't been unlocked yet
-    if (!unlockedCards.has(13)) {
+    // Only show apology overlay if card 14 hasn't been unlocked yet
+    if (!unlockedCards.has(14)) {
       setTimeout(() => {
         setShowApology(true);
       }, 2000);
@@ -345,11 +345,11 @@ export default function App() {
 
   const handleApologyAccept = () => {
     setShowApology(false);
-    // Scroll to card 13
+    // Scroll to card 14
     setTimeout(() => {
-      const card13Element = document.getElementById("card-13");
-      if (card13Element) {
-        card13Element.scrollIntoView({
+      const card14Element = document.getElementById("card-14");
+      if (card14Element) {
+        card14Element.scrollIntoView({
           behavior: "smooth",
           block: "center",
         });
@@ -358,8 +358,8 @@ export default function App() {
   };
 
   const handleCardClick = (cardId: number) => {
-    // If it's the free card (13), unlock it immediately
-    if (cardId === 13 && !unlockedCards.has(cardId)) {
+    // If it's the free card (14), unlock it immediately
+    if (cardId === 14 && !unlockedCards.has(cardId)) {
       setUnlockedCards((prev) => new Set([...prev, cardId]));
       return;
     }
@@ -410,6 +410,17 @@ export default function App() {
     (c) => c.id === selectedCard,
   );
   const allUnlocked = unlockedCards.size === dateCards.length;
+
+  // Show celebration message when all unlocked, then auto-hide after 3 seconds
+  useEffect(() => {
+    if (allUnlocked) {
+      setShowCelebration(true);
+      const timer = setTimeout(() => {
+        setShowCelebration(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [allUnlocked]);
 
   // compute unique days from card data (preserves order)
   const days = Array.from(new Set(dateCards.map((c) => c.day)));
@@ -510,11 +521,7 @@ export default function App() {
                     <div className="flex-1 h-px bg-rose-200" />
                   </div>
 
-                  <div className="relative space-y-12 sm:space-y-16 pb-8">
-                    <TimelineLine
-                      totalCards={cardsForDay.length}
-                    />
-
+                  <div className="relative space-y-8 pb-8">
                     {cardsForDay.map((card, idx) => {
                       const IconComponent =
                         iconMap[card.gameIconName];
@@ -551,21 +558,24 @@ export default function App() {
           </div>
 
           {/* All unlocked message */}
-          {allUnlocked && (
-            <motion.div
-              className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full shadow-2xl px-4 sm:px-8 py-3 sm:py-4 border-2 border-rose-300"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              <p className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
-                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 fill-rose-500" />
-                All unlocked! You're amazing! I can't wait for
-                our perfect weekend! 🎉
-                <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 fill-rose-500" />
-              </p>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {showCelebration && (
+              <motion.div
+                className="fixed bottom-4 sm:bottom-8 left-1/2 -translate-x-1/2 bg-white rounded-full shadow-2xl px-4 sm:px-8 py-3 sm:py-4 border-2 border-rose-300 z-50"
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 50 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              >
+                <p className="text-base sm:text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 fill-rose-500" />
+                  All unlocked! You're amazing! I can't wait for
+                  our perfect weekend! 🎉
+                  <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500 fill-rose-500" />
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
