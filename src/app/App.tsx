@@ -207,7 +207,7 @@ const dateCards = [
     description:
       "U thought this is vacation. Nope i'm gonna work you out Baby. Lets see these Smashes!",
     image:
-      "https://scontent-fra5-1.cdninstagram.com/v/t51.75761-15/491517519_17903847630153611_176025875703939381_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=110&ig_cache_key=MzYxOTUzNTgwNTAxMzMyMjIwNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjE0NDB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=aiXyDal2-GwQ7kNvwGs8hz_&_nc_oc=Adl0LTw4jMsIQ7_Zgwk3IxVlezP5WtXKidWBNm4HNXegr1KKAhZhAQINXXXRWC2EyuY&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-fra5-1.cdninstagram.com&_nc_gid=858UNwYFX29Y_km8QqXQag&_nc_ss=8&oh=00_Afygt8posPYJYBE0JqUPMZiIxEMp2RfhLwOzG-M6nxykqw&oe=69B001E6",
+      "https://cdn.discordapp.com/attachments/792885933150175233/1486268051983962153/image.png?ex=69c4e27d&is=69c390fd&hm=ac138f99ebd9f1af3be06f848b6fed4b56c30cbc7d794490f95ca3a74b51e812&",
     game: "Battleship",
     gameIconName: "Grid3x3",
     password: "WORK",
